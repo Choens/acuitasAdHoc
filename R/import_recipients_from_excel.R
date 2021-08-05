@@ -36,9 +36,9 @@ import_recipients_from_excel <- function(file = "recipients.xlsx", configuration
     for (i in 1:nrow(xl)) {
         recip_list[[i]] <- list(
             stratification = xl$stratification[i],
-            to = tidyr::replace_na(xl$to[i], ""),
-            cc = tidyr::replace_na(xl$cc[i], ""),
-            bcc = tidyr::replace_na(xl$bcc[i], "")
+            to = paste0('"', tidyr::replace_na(xl$to[i], ""), '"'),
+            cc = paste0('"', tidyr::replace_na(xl$cc[i], ""), '"'),
+            bcc = paste0('"', tidyr::replace_na(xl$bcc[i], ""), '"')
         )
     }
     if (configuration == "default" | configuration == "all") {
