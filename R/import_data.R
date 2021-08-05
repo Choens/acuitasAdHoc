@@ -1,16 +1,23 @@
 #' import_data
 #'
-#' Opens a SQL query, runs it, and downloads the result-set.
+#' Looks for "file" in "folder". If it exists, it attempts to run the query
+#' AFTER running validation.sql if it exists. If validation.sql exists, all rows
+#' must return 1 (TRUE) before the report query in "file" will be run. If
+#' validation.sql fails, the function will stop for the number of seconds
+#' defined in wait_time before trying to rerun validation.sql.
 #'
 #' @param file The file where the query lives.
 #' @param folder The folder where the query lives. If validation.sql is in this
 #' folder it will be run BEFORE the sql file.
+#' @param validation_wait_time The number of seconds for import_data to wait if
+#' validation.sql fails. This wait time is intended to give the EDW a chance to
+#' finish, etc.
 #'
 #' @return A data frame with your data.
 #'
 #' @import magrittr
 #' @export
-import_data <- function(file = "query.sql", folder = "sql") {
+import_data <- function(file = "query.sql", folder = "sql", validation_wait_time = 300) {
     config <- config::get()
     qry_file <- file.path(folder, file)
     val_file <- file.path(folder, "validation.sql")
@@ -40,7 +47,6 @@ import_data <- function(file = "query.sql", folder = "sql") {
         tryCatch(
             {
                 qry <- readr::read_file(val_file)
-                wait_time <- 3 ## 300
                 res <- tibble::tibble(TestNM = c("Example Test"), TestValue = c(1))
                 try <- 1
                 while (nrow(res) > 0 & try < 4) {
@@ -51,7 +57,7 @@ import_data <- function(file = "query.sql", folder = "sql") {
                     if (nrow(res) > 0) {
                         msg <- paste0(
                             paste(knitr::kable(res), collapse = "\n"),
-                            paste("\n\nValidation query failed. Wait for", wait_time / 60, "minutes to try again.\n")
+                            paste("\n\nValidation query failed. Wait for", validation_wait_time / 60, "minutes to try again.\n")
                         )
                         if (config::is_active("rsconnect")) {
                             httr::POST(
@@ -63,7 +69,7 @@ import_data <- function(file = "query.sql", folder = "sql") {
                         } else {
                             message(msg)
                         }
-                        Sys.sleep(wait_time)
+                        Sys.sleep(validation_wait_time)
                     }
                     try <- try + 1
                 }
