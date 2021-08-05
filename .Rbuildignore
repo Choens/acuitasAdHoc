@@ -1,0 +1,6 @@
+^LICENSE\.md$
+^.*\.Rhistory$
+^.*\.Rproj$
+^\.Rproj\.user$
+^Makefile$
+^\.vscode$
