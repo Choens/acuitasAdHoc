@@ -49,7 +49,7 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
                 qry <- readr::read_file(val_file)
                 res <- tibble::tibble(TestNM = c("Example Test"), TestValue = c(1))
                 try <- 1
-                while (nrow(res) > 0 & try < 4) {
+                while (try < 4) {
                     message("Validating data.")
                     res <- dbGetQueryInsistent(con, qry) %>%
                         tibble::as_tibble() %>%
@@ -70,6 +70,8 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
                             message(msg)
                         }
                         Sys.sleep(validation_wait_time)
+                    } else {
+                        break()
                     }
                     try <- try + 1
                 }
