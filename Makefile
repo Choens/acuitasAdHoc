@@ -5,14 +5,14 @@ build:
 check:
 	Rscript -e 'devtools::check(".")'
 
-check_doc:
-	Rscript -e 'devtools::check_doc(".")'
-
 document: 
 	Rscript -e 'devtools::document()'
 
 install: 
 	Rscript -e 'devtools::install()'
+
+install_gitlab: 
+	Rscript -e 'devtools::install_gitlab("acuitas-public/acuitasadhoc")'
 
 release:
 	Rscript -e 'devtools::release(".")'
