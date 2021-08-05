@@ -51,7 +51,7 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
                 try <- 1
                 while (nrow(res) > 0 & try < 4) {
                     message("Validating data.")
-                    tmp <- dbGetQueryInsistent(con, qry) %>%
+                    res <- dbGetQueryInsistent(con, qry) %>%
                         tibble::as_tibble() %>%
                         dplyr::filter("TestValue" == 0)
                     if (nrow(res) > 0) {
