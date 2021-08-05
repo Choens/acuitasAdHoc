@@ -4,10 +4,13 @@
 \alias{import_data}
 \title{import_data}
 \usage{
-import_data(file = "query.sql")
+import_data(file = "query.sql", folder = "sql")
 }
 \arguments{
 \item{file}{The file where the query lives.}
+
+\item{folder}{The folder where the query lives. If validation.sql is in this
+folder it will be run BEFORE the sql file.}
 }
 \value{
 A data frame with your data.
