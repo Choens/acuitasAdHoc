@@ -105,36 +105,34 @@ send_email <- function(emails_to_send = NULL) {
     message("Hopefully, we sent all of the messages.")
     if (config::is_active("rsconnect") | config::is_active("prod")) {
         to_upload <-
-            bind_rows(
+            dplyr::bind_rows(
                 emails_to_send %>%
                     dplyr::select(-"cc", -"bcc") %>%
                     dplyr::mutate("to" = str_split(to, ",")) %>%
-                    unnest(cols = c("to")),
+                    tidyr::unnest(cols = c("to")),
                 emails_to_send %>%
                     dplyr::select(-"to", -"bcc") %>%
                     dplyr::mutate("cc" = str_split(cc, ",")) %>%
-                    unnest(cols = c("cc")),
+                    tidyr::unnest(cols = c("cc")),
                 emails_to_send %>%
                     dplyr::select(-"cc", -"to") %>%
                     dplyr::mutate("bcc" = str_split(bcc, ",")) %>%
-                    unnest(cols = c("bcc"))
+                    tidyr::unnest(cols = c("bcc"))
             ) %>%
             dplyr::filter(!is.na(to)) %>%
             dplyr::mutate(
-                ## date_sent = as.character(date_sent),
-                sent = as.integer(sent) ## ,
-                ## created_dt = as.character(created_dt)
+                sent = as.integer(sent)
             ) %>%
             dplyr::select(
-                date_sent,
-                customer,
-                report,
-                report_description,
-                stratification,
-                report_name,
-                recipient = to,
-                created_dt,
-                sent
+                "date_sent",
+                "customer",
+                "report",
+                "report_description",
+                "stratification",
+                "report_name",
+                "recipient" = to,
+                "created_dt",
+                "sent"
             )
         tryCatch(
             {
@@ -173,4 +171,4 @@ send_email <- function(emails_to_send = NULL) {
                 "sent"
             )
     })
-} ## END send_email
+}
