@@ -113,7 +113,12 @@ send_email <- function(emails_to_send = NULL) {
                     uid = Sys.getenv("edw_user"),
                     pwd = Sys.getenv("edw_pass")
                 )
-                dbWriteTableInsistent(con, "AHDSSandbox.dbo.ReportsEmailLog", report_sent)
+                dbWriteTableInsistent(
+                    con,
+                    "AHDSSandbox.dbo.ReportsEmailLog",
+                    report_sent,
+                    append = TRUE
+                )
             },
             error = function(err) {
                 fail_vocally(paste0("Unable to log emails sent. ", as.character(err)))
