@@ -103,7 +103,7 @@ send_email <- function(emails_to_send = NULL) {
         try <- try + 1
     }
     message("Hopefully, we sent all of the messages.")
-    if (config::is_active("rsconnect") | config::is_active("rsconnect")) {
+    if (config::is_active("rsconnect") | config::is_active("prod")) {
         ## ---- DB Connection ----
         tryCatch(
             {
