@@ -4,10 +4,10 @@
 \alias{validate_recipients}
 \title{validate_recipients}
 \usage{
-validate_recipients(config)
+validate_recipients(recipients)
 }
 \arguments{
-\item{config}{A config object from config::get(). This config list must
+\item{recipients}{A list of recipients. This config list must
 contain 'recipients'.}
 }
 \value{

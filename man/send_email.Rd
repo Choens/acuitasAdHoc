@@ -10,9 +10,11 @@ send_email(emails_to_send = NULL)
 \item{emails_to_send}{A table of emails to send.}
 }
 \value{
-Not much. This is all about the side effects.
+Returns emails sent status for each record in emails_to_send
 }
 \description{
 Sends the recipients in config.yml an email.
 They get their report. We get paid. Everyone wins.
+When run with the prod or rsconnect configs, it logs the sent email data to
+the EDW (dev and prod).
 }

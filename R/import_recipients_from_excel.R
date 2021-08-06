@@ -36,9 +36,9 @@ import_recipients_from_excel <- function(file = "recipients.xlsx", configuration
     for (i in 1:nrow(xl)) {
         recip_list[[i]] <- list(
             stratification = xl$stratification[i],
-            to = paste0('"', tidyr::replace_na(xl$to[i], ""), '"'),
-            cc = paste0('"', tidyr::replace_na(xl$cc[i], ""), '"'),
-            bcc = paste0('"', tidyr::replace_na(xl$bcc[i], ""), '"')
+            to = as.character(tidyr::replace_na(xl$to[i], "")),
+            cc = as.character(tidyr::replace_na(xl$cc[i], "")),
+            bcc = as.character(tidyr::replace_na(xl$bcc[i], ""))
         )
     }
     if (configuration == "default" | configuration == "all") {
@@ -53,7 +53,7 @@ import_recipients_from_excel <- function(file = "recipients.xlsx", configuration
     if (preview) {
         message(yaml::as.yaml(cfg, indent.mapping.sequence = TRUE))
     } else {
-        yaml::write_yaml(cfg, indent.mapping.sequence = TRUE)
+        yaml::write_yaml(cfg, file = "config.yml", indent.mapping.sequence = TRUE)
     }
     TRUE
 }

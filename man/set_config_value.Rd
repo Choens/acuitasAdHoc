@@ -19,8 +19,7 @@ interactive/testing purposes. Don't use this in a script. Seriously. It won't
 do anything useful. The default is zero.}
 }
 \value{
-Returns TRUE if successful. Else it probably just dies, but it might
-return FALSE.
+None
 }
 \description{
 Sets the values of EXISTING parameters. You have to be careful with this

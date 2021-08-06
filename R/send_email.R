@@ -2,28 +2,54 @@
 #'
 #' Sends the recipients in config.yml an email.
 #' They get their report. We get paid. Everyone wins.
+#' When run with the prod or rsconnect configs, it logs the sent email data to
+#' the EDW (dev and prod).
 #'
 #' @param emails_to_send A table of emails to send.
 #'
-#' @return Not much. This is all about the side effects.
+#' @return Returns emails sent status for each record in emails_to_send
 #'
 #' @import magrittr
 #' @export
 send_email <- function(emails_to_send = NULL) {
-    config <- config::get()
     stopifnot(exprs = {
+        file.exists("config.yml")
         !is.null(emails_to_send)
     })
+    config <- config::get()
     smtp_send_possibly <- purrr::possibly(
         blastula::smtp_send,
         otherwise = NA,
         quiet = FALSE
     )
+    connect_rate <- purrr::rate_delay(pause = 30, max_times = 10)
+    dbConnectInsistent <- purrr::insistently(DBI::dbConnect, rate = connect_rate)
+    dbWriteTableInsistent <- purrr::insistently(DBI::dbWriteTable, rate = connect_rate)
     greeting <- dplyr::if_else(
         lubridate::am(lubridate::now(tzone = "America/New_York")),
         "Good Morning",
         "Good Afternoon"
     )
+    emails_to_send$report <- config$report_name
+    emails_to_send$report_description <- config$report_description
+    emails_to_send$customer <- config$customer
+    emails_to_send$sent <- FALSE
+    emails_to_send <-
+        emails_to_send %>%
+        dplyr::mutate("date_sent" = lubridate::today()) %>%
+        dplyr::select(
+            "date_sent",
+            "customer",
+            "report",
+            "report_description",
+            "stratification",
+            "to",
+            "cc",
+            "bcc",
+            "report_name",
+            "created_dt",
+            "sent"
+        )
     for (i in 1:nrow(emails_to_send)) {
         if (i > config$number_reports_to_send) break()
         if (emails_to_send$stratification[i] == "") {
@@ -52,14 +78,14 @@ send_email <- function(emails_to_send = NULL) {
             )
             if (is.null(email_sent)) {
                 email_sent <- TRUE
+                emails_to_send$sent[i] <- TRUE
             } else if (email_sent == FALSE) {
                 message("Email failed to send on try ", try, ". Trying again.")
             } else {
                 message("Email failed to send on try ", try, ". Trying again.")
             }
-            try <- try + 1
         }
-        if (try > 3) {
+        if (try == 3) {
             msg <- paste0(
                 "Unable to send ",
                 emails_to_send$stratification[i],
@@ -74,6 +100,36 @@ send_email <- function(emails_to_send = NULL) {
                 )
             }
         }
+        try <- try + 1
     }
     message("Hopefully, we sent all of the messages.")
+    if (config::is_active("rsconnect") | config::is_active("rsconnect")) {
+        ## ---- DB Connection ----
+        tryCatch(
+            {
+                con <- dbConnectInsistent(
+                    odbc::odbc(),
+                    dsn = config$dsn_name,
+                    uid = Sys.getenv("edw_user"),
+                    pwd = Sys.getenv("edw_pass")
+                )
+                dbWriteTableInsistent(con, "AHDSSandbox.dbo.ReportsEmailLog", report_sent)
+            },
+            error = function(err) {
+                fail_vocally(paste0("Unable to log emails sent. ", as.character(err)))
+            }
+        )
+    }
+    return({
+        emails_to_send %>%
+            dplyr::select(
+                "stratification",
+                "to",
+                "cc",
+                "bcc",
+                "report_name",
+                "created_dt",
+                "sent"
+            )
+    })
 } ## END send_email

@@ -14,8 +14,7 @@
 #' interactive/testing purposes. Don't use this in a script. Seriously. It won't
 #' do anything useful. The default is zero.
 #'
-#' @return Returns TRUE if successful. Else it probably just dies, but it might
-#' return FALSE.
+#' @return None
 #' @export
 set_config_value <- function(parameter, value, configuration = "default", preview = FALSE) {
     stopifnot(exprs = {
@@ -26,25 +25,25 @@ set_config_value <- function(parameter, value, configuration = "default", previe
     })
     cfg <- yaml::read_yaml("config.yml")
     if (configuration == "default" | configuration == "all") {
-        message("hello")
-        if (length(cfg$default[names(cfg$default) == value]) == 0) {
-            ## TODO: It would be nice to not have to error out here.
-            stop("set_config_value only SETS existing parameters.")
-        }
+        ## if (length(cfg$default[names(cfg$default) == value]) == 0) {
+        ##    ## TODO: It would be nice to not have to error out here.
+        ##    stop("set_config_value only SETS existing parameters.")
+        ## }
         cfg$default[names(cfg$default) == parameter] <- value
     }
     if (configuration == "prod" | configuration == "all") {
-        if (length(cfg$prod[names(cfg$prod) == value]) == 0) {
-            ## TODO: It would be nice to not have to error out here.
-            stop("set_config_value only SETS existing parameters.")
-        }
+        ## if (length(cfg$prod[names(cfg$prod) == value]) == 0) {
+        ##    message("hello")
+        ##    ## TODO: It would be nice to not have to error out here.
+        ##    stop("set_config_value only SETS existing parameters.")
+        ## }
         cfg$prod[names(cfg$prod) == parameter] <- value
     }
     if (configuration == "rsconnect" | configuration == "all") {
-        if (length(cfg$rsconnect[names(cfg$rsconnect) == value]) == 0) {
-            ## TODO: It would be nice to not have to error out here.
-            stop("set_config_value only SETS existing parameters.")
-        }
+        ## if (length(cfg$rsconnect[names(cfg$rsconnect) == value]) == 0) {
+        ##    ## TODO: It would be nice to not have to error out here.
+        ##    stop("set_config_value only SETS existing parameters.")
+        ## }
         cfg$rsconnect[names(cfg$rsconnect) == parameter] <- value
     }
     if (preview) {

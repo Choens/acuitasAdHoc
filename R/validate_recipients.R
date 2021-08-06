@@ -3,20 +3,19 @@
 #' Validates that at all sites have at least one recipient. This only checks the
 #' CURRENT active config. To test the rest of the YAML file, use validate_config.
 #'
-#' @param config A config object from config::get(). This config list must
+#' @param recipients A list of recipients. This config list must
 #' contain 'recipients'.
 #' @return Nothing. If the validation fails, it will stop your script.
 #' @export
-validate_recipients <- function(config) {
+validate_recipients <- function(recipients) {
     stopifnot(exprs = {
-        !missing(config)
-        "recipients" %in% names(config)
-        length(config$recipients) > 0
-        is.list(config$recipients)
+        !missing(recipients)
+        length(recipients) > 0
+        is.list(recipients)
     })
-    is_blank <- logical(length = length(config$recipients))
-    for (i in seq_along(config$recipients)) {
-        test_val <- config$recipients[[i]]$to
+    is_blank <- logical(length = length(recipients))
+    for (i in seq_along(recipients)) {
+        test_val <- recipients[[i]]$to
         is_blank[i] <- max(c(test_val == "", is.null(test_val)))
     }
     if (max(is_blank)) {

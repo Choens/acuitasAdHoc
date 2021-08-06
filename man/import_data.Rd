@@ -4,17 +4,25 @@
 \alias{import_data}
 \title{import_data}
 \usage{
-import_data(file = "query.sql", folder = "sql")
+import_data(file = "query.sql", folder = "sql", validation_wait_time = 300)
 }
 \arguments{
 \item{file}{The file where the query lives.}
 
 \item{folder}{The folder where the query lives. If validation.sql is in this
 folder it will be run BEFORE the sql file.}
+
+\item{validation_wait_time}{The number of seconds for import_data to wait if
+validation.sql fails. This wait time is intended to give the EDW a chance to
+finish, etc.}
 }
 \value{
 A data frame with your data.
 }
 \description{
-Opens a SQL query, runs it, and downloads the result-set.
+Looks for "file" in "folder". If it exists, it attempts to run the query
+AFTER running validation.sql if it exists. If validation.sql exists, all rows
+must return 1 (TRUE) before the report query in "file" will be run. If
+validation.sql fails, the function will stop for the number of seconds
+defined in wait_time before trying to rerun validation.sql.
 }

@@ -27,6 +27,7 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
     connect_rate <- purrr::rate_delay(pause = 30, max_times = 10)
     dbConnectInsistent <- purrr::insistently(DBI::dbConnect, rate = connect_rate)
     dbGetQueryInsistent <- purrr::insistently(DBI::dbGetQuery, rate = connect_rate)
+
     ## ---- DB Connection ----
     tryCatch(
         {
