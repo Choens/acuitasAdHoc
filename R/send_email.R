@@ -121,9 +121,9 @@ send_email <- function(emails_to_send = NULL) {
             ) %>%
             dplyr::filter(!is.na(to)) %>%
             dplyr::mutate(
-                date_sent = as.character(date_sent),
-                sent = as.integer(sent),
-                created_dt = as.character(created_dt)
+                ## date_sent = as.character(date_sent),
+                sent = as.integer(sent) ## ,
+                ## created_dt = as.character(created_dt)
             ) %>%
             dplyr::select(
                 date_sent,
