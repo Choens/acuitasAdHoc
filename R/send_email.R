@@ -84,8 +84,9 @@ send_email <- function(emails_to_send = NULL) {
             } else {
                 message("Email failed to send on try ", try, ". Trying again.")
             }
+            try <- try + 1
         }
-        if (try == 3) {
+        if (try > 3) {
             msg <- paste0(
                 "Unable to send ",
                 emails_to_send$stratification[i],
@@ -100,28 +101,63 @@ send_email <- function(emails_to_send = NULL) {
                 )
             }
         }
-        try <- try + 1
     }
     message("Hopefully, we sent all of the messages.")
     if (config::is_active("rsconnect") | config::is_active("prod")) {
-        ## ---- DB Connection ----
+        to_upload <-
+            bind_rows(
+                emails_to_send %>%
+                    dplyr::select(-"cc", -"bcc") %>%
+                    dplyr::mutate("to" = str_split(to, ",")) %>%
+                    unnest(cols = c("to")),
+                emails_to_send %>%
+                    dplyr::select(-"to", -"bcc") %>%
+                    dplyr::mutate("cc" = str_split(cc, ",")) %>%
+                    unnest(cols = c("cc")),
+                emails_to_send %>%
+                    dplyr::select(-"cc", -"to") %>%
+                    dplyr::mutate("bcc" = str_split(bcc, ",")) %>%
+                    unnest(cols = c("bcc"))
+            ) %>%
+            dplyr::filter(!is.na(to)) %>%
+            dplyr::mutate(
+                date_sent = as.character(date_sent),
+                sent = as.integer(sent),
+                created_dt = as.character(created_dt)
+            ) %>%
+            dplyr::select(
+                date_sent,
+                customer,
+                report,
+                report_description,
+                stratification,
+                report_name,
+                recipient = to,
+                created_dt,
+                sent
+            )
         tryCatch(
             {
                 con <- dbConnectInsistent(
                     odbc::odbc(),
                     dsn = config$dsn_name,
+                    database = "AHDSSandbox",
                     uid = Sys.getenv("edw_user"),
                     pwd = Sys.getenv("edw_pass")
                 )
                 dbWriteTableInsistent(
                     con,
-                    "AHDSSandbox.dbo.ReportsEmailLog",
-                    report_sent,
-                    append = TRUE
+                    "ReportsEmailLog",
+                    to_upload,
+                    append = TRUE,
+                    overwrite = FALSE,
+                    batch_rows = nrow(to_upload)
                 )
             },
             error = function(err) {
-                fail_vocally(paste0("Unable to log emails sent. ", as.character(err)))
+                fail_vocally(
+                    paste0("Unable to log emails sent. ", as.character(err))
+                )
             }
         )
     }
