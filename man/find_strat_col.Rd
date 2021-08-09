@@ -20,12 +20,5 @@ stratification column.
 \description{
 From a data frame/tibble, find the column labeled "Stratification".
 This is the column we will use to stratify the reports by.
-If config$has_stratification is set to:
-\itemize{
-\item 'strict', this function will return an error on any query that
-doesn't have a stratification column.
-\item 'relaxed', it will only return a warning if it doesn't find a
-Stratification column and return NA.
-\item 'no', it will return NA.
-}
+If there isn't a stratification column, find_strat_col returns NA.
 }
