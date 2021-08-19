@@ -58,7 +58,10 @@ send_email <- function(emails_to_send = NULL) {
             message("Sending email ", emails_to_send$stratification[i])
         }
         email_to_send <-
-            blastula::render_email(input = "email.Rmd") %>%
+            blastula::render_email(
+                input = "email.Rmd",
+                envir = knitr::knit_global()
+            ) %>%
             blastula::add_attachment(file = emails_to_send$report_name[i])
         email_sent <- FALSE
         try <- 1
