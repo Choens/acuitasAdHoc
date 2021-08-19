@@ -30,6 +30,7 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
 
     ## ---- DB Connection ----
     tryCatch(
+        message("Connecting as: ", Sys.getenv("edw_user"))
         {
             con <- dbConnectInsistent(
                 odbc::odbc(),
