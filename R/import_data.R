@@ -32,7 +32,8 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
     ## ---- DB Connection ----
     tryCatch(
         {
-            con <- dbConnectInsistent(
+            ## con <- dbConnectInsistent(
+            con <- dbConnect(
                 odbc::odbc(),
                 dsn = config$dsn_name,
                 timeout = 20,
@@ -41,7 +42,7 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
             )
         },
         error = function(err) {
-            fail_vocally(paste0("Unable to connect to database. ", as.character(err)))
+            fail_vocally(paste0("Database connection error: ", as.character(err)))
         }
     )
 
@@ -53,10 +54,12 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
                 res <- tibble::tibble(TestNM = c("Example Test"), TestValue = c(1))
                 try <- 1
                 while (try < 4) {
-                    message("Validating data.")
-                    res <- dbGetQueryInsistent(con, qry) %>%
+                    message("Validating EDW status.")
+                    ## res <- dbGetQueryInsistent(con, qry) %>%
+                    res <- dbGetQuery(con, qry) %>%
                         tibble::as_tibble() %>%
                         dplyr::filter("TestValue" == 0)
+                    ## TODO: Validate res to make sure it has the TestNM and TestValue columns.
                     if (nrow(res) > 0) {
                         msg <- paste0(
                             paste(knitr::kable(res), collapse = "\n"),
@@ -93,7 +96,8 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
         {
             qry <- readr::read_file(qry_file)
             message("Downloading data.")
-            res <- dbGetQueryInsistent(con, qry) %>% tibble::as_tibble()
+            ## res <- dbGetQueryInsistent(con, qry) %>% tibble::as_tibble()
+            res <- dbGetQuery(con, qry) %>% tibble::as_tibble()
         },
         error = function(err) {
             fail_vocally(paste0("Unable to run report query. ", as.character(err)))
