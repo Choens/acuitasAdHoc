@@ -35,6 +35,7 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
             con <- dbConnectInsistent(
                 odbc::odbc(),
                 dsn = config$dsn_name,
+                timeout = 20,
                 uid = Sys.getenv("edw_user"),
                 pwd = Sys.getenv("edw_pass")
             )
