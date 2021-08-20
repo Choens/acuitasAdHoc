@@ -15,6 +15,9 @@ send_email <- function(emails_to_send = NULL) {
     stopifnot(exprs = {
         file.exists("config.yml")
         !is.null(emails_to_send)
+        ## TODO: Test to see if the user has defined smtp_pass, smtp_from,
+        ## smtp_user, smtp_prov in .Renviron
+        ## And if not, do something that the user can understand.
     })
     config <- config::get()
     smtp_send_possibly <- purrr::possibly(
