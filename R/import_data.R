@@ -15,7 +15,6 @@
 #'
 #' @return A data frame with your data.
 #'
-#' @import magrittr
 #' @export
 import_data <- function(file = "query.sql", folder = "sql", validation_wait_time = 300) {
     config <- config::get()
@@ -25,15 +24,15 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
         file.exists(qry_file)
     })
     connect_rate <- purrr::rate_delay(pause = 30, max_times = 10)
-    dbConnectInsistent <- purrr::insistently(DBI::dbConnect, rate = connect_rate)
-    dbGetQueryInsistent <- purrr::insistently(DBI::dbGetQuery, rate = connect_rate)
+    ##dbConnectInsistent <- purrr::insistently(DBI::dbConnect, rate = connect_rate)
+    ##dbGetQueryInsistent <- purrr::insistently(DBI::dbGetQuery, rate = connect_rate)
     message("Connecting as: ", Sys.getenv("edw_user"))
 
     ## ---- DB Connection ----
     tryCatch(
         {
             ## con <- dbConnectInsistent(
-            con <- dbConnect(
+            con <- DBI::dbConnect(
                 odbc::odbc(),
                 dsn = config$dsn_name,
                 timeout = 20,
@@ -55,10 +54,11 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
                 try <- 1
                 while (try < 4) {
                     message("Validating EDW status.")
-                    ## res <- dbGetQueryInsistent(con, qry) %>%
-                    res <- dbGetQuery(con, qry) %>%
-                        tibble::as_tibble() %>%
-                        dplyr::filter("TestValue" == 0)
+                    ## res <- tibble::as_tibble(dbGetQueryInsistent(con, qry))
+                    res <- tibble::as_tibble(
+                        DBI::dbGetQuery(con, qry)
+                        )
+                    res <- dplyr::filter(res, "TestValue" == 0)
                     ## TODO: Validate res to make sure it has the TestNM and TestValue columns.
                     if (nrow(res) > 0) {
                         msg <- paste0(
@@ -96,8 +96,8 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
         {
             qry <- readr::read_file(qry_file)
             message("Downloading data.")
-            ## res <- dbGetQueryInsistent(con, qry) %>% tibble::as_tibble()
-            res <- dbGetQuery(con, qry) %>% tibble::as_tibble()
+            ## res <- tibble::as_tibble(dbGetQueryInsistent(con, qry))
+            res <- tibble::as_tibble(DBI::dbGetQuery(con, qry))
         },
         error = function(err) {
             fail_vocally(paste0("Unable to run report query. ", as.character(err)))

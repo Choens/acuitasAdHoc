@@ -9,7 +9,6 @@
 #'
 #' @return Returns emails sent status for each record in emails_to_send
 #'
-#' @import magrittr
 #' @export
 send_email <- function(emails_to_send = NULL) {
     stopifnot(exprs = {
