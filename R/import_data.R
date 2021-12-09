@@ -23,27 +23,36 @@ import_data <- function(file = "query.sql", folder = "sql", validation_wait_time
     stopifnot(exprs = {
         file.exists(qry_file)
     })
-    connect_rate <- purrr::rate_delay(pause = 30, max_times = 10)
+    ##connect_rate <- purrr::rate_delay(pause = 30, max_times = 10)
     ##dbConnectInsistent <- purrr::insistently(DBI::dbConnect, rate = connect_rate)
     ##dbGetQueryInsistent <- purrr::insistently(DBI::dbGetQuery, rate = connect_rate)
     message("Connecting as: ", Sys.getenv("edw_user"))
 
+    con <- DBI::dbConnect(
+        odbc::odbc(),
+        dsn = config$dsn_name,
+        timeout = 20,
+        uid = Sys.getenv("edw_user"),
+        pwd = Sys.getenv("edw_pass")
+        )
+    
     ## ---- DB Connection ----
-    tryCatch(
-        {
-            ## con <- dbConnectInsistent(
-            con <- DBI::dbConnect(
-                odbc::odbc(),
-                dsn = config$dsn_name,
-                timeout = 20,
-                uid = Sys.getenv("edw_user"),
-                pwd = Sys.getenv("edw_pass")
-            )
-        },
-        error = function(err) {
-            fail_vocally(paste0("Database connection error: ", as.character(err)))
-        }
-    )
+    ## My fancy stuff chokes on RSC.
+    ## tryCatch(
+    ##     {
+    ##         ## con <- dbConnectInsistent(
+    ##         con <- DBI::dbConnect(
+    ##             odbc::odbc(),
+    ##             dsn = config$dsn_name,
+    ##             timeout = 20,
+    ##             uid = Sys.getenv("edw_user"),
+    ##             pwd = Sys.getenv("edw_pass")
+    ##         )
+    ##     },
+    ##     error = function(err) {
+    ##         fail_vocally(paste0("Database connection error: ", as.character(err)))
+    ##     }
+    ## )
 
     ## ---- validation.qry ----
     if (file.exists(val_file)) {
