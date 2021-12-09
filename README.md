@@ -9,6 +9,8 @@ you have the template downloaded, `make install_custom_packages` from the shell.
 The latter is possibly safer, because it ALSO makes sure you have devtools
 installed because you can't install this without devtools, sorry.
 
+`devtools::install_github("Choens/acuitasadhoc")`
+
 This package provides useful support functions for the Acuitas Ad Hoc Template.
 
 ## Useful SQL Queries
