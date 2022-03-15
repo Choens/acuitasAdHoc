@@ -9,10 +9,10 @@ document:
 	Rscript -e 'devtools::document()'
 
 install: 
-	Rscript -e 'devtools::install()'
+	Rscript -e 'remotes::install()'
 
 install_gitlab: 
-	Rscript -e 'devtools::install_gitlab("acuitas-public/acuitasadhoc")'
+	Rscript -e 'remotes::install_gitlab("acuitas-public/acuitasadhoc", force = TRUE)'
 
 release:
 	Rscript -e 'devtools::release(".")'
