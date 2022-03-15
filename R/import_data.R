@@ -76,7 +76,7 @@ import_data <- function(file = "query.sql", folder = "sql", verbose = FALSE, par
   if (verbose) {
     cat(paste("N Rows Downloaded:", nrow(res)))
     cat(head(res))
-  }z
+  }
   DBI::dbDisconnect(con)
   res
 } ## END import_data
