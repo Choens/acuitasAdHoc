@@ -4,7 +4,7 @@
 \alias{import_data}
 \title{import_data}
 \usage{
-import_data(file = "query.sql", folder = "sql", validation_wait_time = 300)
+import_data(file = "query.sql", folder = "sql", verbose = FALSE, params = NULL)
 }
 \arguments{
 \item{file}{The file where the query lives.}
@@ -12,9 +12,10 @@ import_data(file = "query.sql", folder = "sql", validation_wait_time = 300)
 \item{folder}{The folder where the query lives. If validation.sql is in this
 folder it will be run BEFORE the sql file.}
 
-\item{validation_wait_time}{The number of seconds for import_data to wait if
-validation.sql fails. This wait time is intended to give the EDW a chance to
-finish, etc.}
+\item{verbose}{If TRUE, this function talks a lot. Useful for debugging
+connection issues and not much else.}
+
+\item{params}{A LIST of parameters to alter the query.}
 }
 \value{
 A data frame with your data.

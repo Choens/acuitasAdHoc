@@ -4,14 +4,13 @@
 \alias{find_strat_col}
 \title{find_strat_col}
 \usage{
-find_strat_col(data = NULL, col_name = "Stratification")
+find_strat_col(data = NULL)
 }
 \arguments{
 \item{data}{The data frame to search through.}
 
-\item{col_name}{The column name value of the stratification column. By
-default, this is 'Stratification'. It can, however, be anything else you
-want it to be.}
+\item{col_name}{The column name value of the stratification column. This can
+be set in config.yaml.}
 }
 \value{
 This function will return either a number or NA if it cannot locate a
