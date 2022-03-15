@@ -17,10 +17,8 @@
 #'
 #' @export
 import_data <- function(file = "query.sql", folder = "sql", verbose = FALSE, params = NULL) {
-  ## TODO: Return this function to it's former glory.
   config <- config::get()
   qry_file <- file.path(folder, file)
-  val_file <- file.path(folder, "validation.sql")
   stopifnot(exprs = {
     file.exists(qry_file)
   })
@@ -28,16 +26,6 @@ import_data <- function(file = "query.sql", folder = "sql", verbose = FALSE, par
   dbConnectInsistent <- purrr::insistently(DBI::dbConnect, rate = connect_rate)
   dbGetQueryInsistent <- purrr::insistently(DBI::dbGetQuery, rate = connect_rate)
   if (verbose) cat("\n- Connecting as: ", Sys.getenv("edw_user"))
-
-  ## ---- DB Connection ----
-  ## IDK, I just want to connect.
-  ## con <- DBI::dbConnect(
-  ##   odbc::odbc(),
-  ##   dsn = config$dsn_name,
-  ##   timeout = 20,
-  ##   uid = Sys.getenv("edw_user"),
-  ##   pwd = Sys.getenv("edw_pass")
-  ## )
   tryCatch(
     {
       con <- dbConnectInsistent(
@@ -54,22 +42,12 @@ import_data <- function(file = "query.sql", folder = "sql", verbose = FALSE, par
   )
 
   ## ---- query.sql ----
-  if (exists("res")) rm(res)
   qry <- readr::read_file(qry_file)
-
   if (verbose) cat("\n- Downloading data.")
-  ## if (is_null(params)) {
-  ##   res <- tibble::as_tibble(DBI::dbGetQuery(con, qry))
-  ## } else {
-  ##   res <- tibble::as_tibble(DBI::dbGetQuery(con, qry, params = params))
-  ## }
-
   tryCatch(
     {
-      if (exists("res")) rm(res)
       qry <- readr::read_file(qry_file)
       if (verbose) cat("\n- Downloading data.")
-      ## res <- tibble::as_tibble(dbGetQueryInsistent(con, qry))
       if (is_null(params)) {
         res <- tibble::as_tibble(DBI::dbGetQuery(con, qry))
       } else {
