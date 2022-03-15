@@ -22,42 +22,57 @@ import_data <- function(file = "query.sql", folder = "sql", verbose = FALSE, par
   stopifnot(exprs = {
     file.exists(qry_file)
   })
-  connect_rate <- purrr::rate_delay(pause = 30, max_times = 10)
-  dbConnectInsistent <- purrr::insistently(DBI::dbConnect, rate = connect_rate)
-  dbGetQueryInsistent <- purrr::insistently(DBI::dbGetQuery, rate = connect_rate)
+  ##connect_rate <- purrr::rate_delay(pause = 30, max_times = 10)
+  ##dbConnectInsistent <- purrr::insistently(DBI::dbConnect, rate = connect_rate)
+  ##dbGetQueryInsistent <- purrr::insistently(DBI::dbGetQuery, rate = connect_rate)
   if (verbose) cat("\n- Connecting as: ", Sys.getenv("edw_user"))
-  tryCatch(
-    {
-      con <- dbConnectInsistent(
-        odbc::odbc(),
-        dsn = config$dsn_name,
-        timeout = 20,
-        uid = Sys.getenv("edw_user"),
-        pwd = Sys.getenv("edw_pass")
-      )
-    },
-    error = function(err) {
-      paste0("Database connection error: ", as.character(err))
-    }
+  ##tryCatch(
+  ##  {
+  ##    con <- dbConnectInsistent(
+  ##      odbc::odbc(),
+  ##      dsn = config$dsn_name,
+  ##      timeout = 20,
+  ##      uid = Sys.getenv("edw_user"),
+  ##      pwd = Sys.getenv("edw_pass")
+  ##    )
+  ##  },
+  ##  error = function(err) {
+  ##    paste0("Database connection error: ", as.character(err))
+  ##  }
+  ##)
+  con <- dbConnect(
+    odbc::odbc(),
+    dsn = config$dsn_name,
+    timeout = 20,
+    uid = Sys.getenv("edw_user"),
+    pwd = Sys.getenv("edw_pass")
   )
+  
 
   ## ---- query.sql ----
   qry <- readr::read_file(qry_file)
   if (verbose) cat("\n- Downloading data.")
-  tryCatch(
-    {
-      qry <- readr::read_file(qry_file)
-      if (verbose) cat("\n- Downloading data.")
-      if (is_null(params)) {
-        res <- tibble::as_tibble(DBI::dbGetQuery(con, qry))
-      } else {
-        res <- tibble::as_tibble(DBI::dbGetQuery(con, qry, params = params))
-      }
-    },
-    error = function(err) {
-      paste0("Unable to run report query. ", as.character(err))
-    }
-  )
+  ##tryCatch(
+  ##  {
+  ##    qry <- readr::read_file(qry_file)
+  ##    if (verbose) cat("\n- Downloading data.")
+  ##    if (is_null(params)) {
+  ##      res <- tibble::as_tibble(DBI::dbGetQuery(con, qry))
+  ##    } else {
+  ##      res <- tibble::as_tibble(DBI::dbGetQuery(con, qry, params = params))
+  ##    }
+  ##  },
+  ##  error = function(err) {
+  ##    paste0("Unable to run report query. ", as.character(err))
+  ##  }
+  ##)
+  qry <- readr::read_file(qry_file)
+  if (verbose) cat("\n- Downloading data.")
+  if (is_null(params)) {
+    res <- tibble::as_tibble(DBI::dbGetQuery(con, qry))
+  } else {
+    res <- tibble::as_tibble(DBI::dbGetQuery(con, qry, params = params))
+  }
   if (verbose) {
     cat(paste("N Rows Downloaded:", nrow(res)))
     cat(head(res))
