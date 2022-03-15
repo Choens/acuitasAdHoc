@@ -9,16 +9,17 @@
 #'
 #' @export
 clean_stratifications <- function(s) {
-    stopifnot(exprs = {
-        !missing(s)
-    })
-    ## TODO Add missing Windows special characters: * ? |
-    s <- stringr::str_replace(s, "/", "-")
-    s <- stringr::str_replace(s, "\\\\", "-")
-    s <- stringr::str_replace(s, ":", "-")
-    s <- stringr::str_replace(s, '"', "-")
-    s <- stringr::str_replace(s, "'", "-")
-    s <- stringr::str_replace(s, "<", "-")
-    s <- stringr::str_replace(s, ">", "-")
-    s
-}
+  stopifnot(exprs = {
+    !missing(s)
+  })
+  ## TODO Add missing Windows special characters: * ? |
+  s <- stringr::str_replace(s, "/", "-")
+  s <- stringr::str_replace(s, "\\\\", "-")
+  s <- stringr::str_replace(s, ":", "-")
+  s <- stringr::str_replace(s, '"', "-")
+  s <- stringr::str_replace(s, "'", "-")
+  s <- stringr::str_replace(s, "<", "-")
+  s <- stringr::str_replace(s, ">", "-")
+  s
+} ## END clean_stratifications
+

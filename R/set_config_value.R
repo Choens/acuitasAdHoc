@@ -17,38 +17,30 @@
 #' @return None
 #' @export
 set_config_value <- function(parameter, value, configuration = "default", preview = FALSE) {
-    stopifnot(exprs = {
-        !missing(parameter)
-        !missing(value)
-        file.exists("config.yml")
-        configuration %in% c("default", "prod", "rsconnect", "all")
-    })
-    cfg <- yaml::read_yaml("config.yml")
-    if (configuration == "default" | configuration == "all") {
-        ## if (length(cfg$default[names(cfg$default) == value]) == 0) {
-        ##    ## TODO: It would be nice to not have to error out here.
-        ##    stop("set_config_value only SETS existing parameters.")
-        ## }
-        cfg$default[names(cfg$default) == parameter] <- value
-    }
-    if (configuration == "prod" | configuration == "all") {
-        ## if (length(cfg$prod[names(cfg$prod) == value]) == 0) {
-        ##    message("hello")
-        ##    ## TODO: It would be nice to not have to error out here.
-        ##    stop("set_config_value only SETS existing parameters.")
-        ## }
-        cfg$prod[names(cfg$prod) == parameter] <- value
-    }
-    if (configuration == "rsconnect" | configuration == "all") {
-        ## if (length(cfg$rsconnect[names(cfg$rsconnect) == value]) == 0) {
-        ##    ## TODO: It would be nice to not have to error out here.
-        ##    stop("set_config_value only SETS existing parameters.")
-        ## }
-        cfg$rsconnect[names(cfg$rsconnect) == parameter] <- value
-    }
-    if (preview) {
-        message(yaml::as.yaml(cfg, indent.mapping.sequence = TRUE))
-    } else {
-        yaml::write_yaml(cfg, "config.yml", indent.mapping.sequence = TRUE)
-    }
-}
+  stopifnot(exprs = {
+    !missing(parameter)
+    !missing(value)
+    file.exists("config.yml")
+    configuration %in% c("default", "rsconnect", "all")
+  })
+  cfg <- yaml::read_yaml("config.yml")
+  if (configuration == "default" | configuration == "all") {
+    ## if (length(cfg$default[names(cfg$default) == value]) == 0) {
+    ##    ## TODO: It would be nice to not have to error out here.
+    ##    stop("set_config_value only SETS existing parameters.")
+    ## }
+    cfg$default[names(cfg$default) == parameter] <- value
+  }
+  if (configuration == "rsconnect" | configuration == "all") {
+    ## if (length(cfg$rsconnect[names(cfg$rsconnect) == value]) == 0) {
+    ##    ## TODO: It would be nice to not have to error out here.
+    ##    stop("set_config_value only SETS existing parameters.")
+    ## }
+    cfg$rsconnect[names(cfg$rsconnect) == parameter] <- value
+  }
+  if (preview) {
+    cat(yaml::as.yaml(cfg, indent.mapping.sequence = TRUE))
+  } else {
+    yaml::write_yaml(cfg, "config.yml", indent.mapping.sequence = TRUE)
+  }
+} ## END set_config_value
