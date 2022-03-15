@@ -56,7 +56,7 @@ import_data <- function(file = "query.sql", folder = "sql", verbose = FALSE, par
   ##  {
   ##    qry <- readr::read_file(qry_file)
   ##    if (verbose) cat("\n- Downloading data.")
-  ##    if (is_null(params)) {
+  ##    if (is.null(params)) {
   ##      res <- tibble::as_tibble(DBI::dbGetQuery(con, qry))
   ##    } else {
   ##      res <- tibble::as_tibble(DBI::dbGetQuery(con, qry, params = params))
@@ -68,7 +68,7 @@ import_data <- function(file = "query.sql", folder = "sql", verbose = FALSE, par
   ##)
   qry <- readr::read_file(qry_file)
   if (verbose) cat("\n- Downloading data.")
-  if (is_null(params)) {
+  if (is.null(params)) {
     res <- tibble::as_tibble(DBI::dbGetQuery(con, qry))
   } else {
     res <- tibble::as_tibble(DBI::dbGetQuery(con, qry, params = params))
@@ -76,7 +76,7 @@ import_data <- function(file = "query.sql", folder = "sql", verbose = FALSE, par
   if (verbose) {
     cat(paste("N Rows Downloaded:", nrow(res)))
     cat(head(res))
-  }
+  }z
   DBI::dbDisconnect(con)
   res
 } ## END import_data
