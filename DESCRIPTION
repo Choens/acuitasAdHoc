@@ -1,6 +1,6 @@
 Package: acuitasAdHoc
 Title: Acuitas Ad Hoc
-Version: 0.3.3
+Version: 0.5.0
 Authors@R: 
     person(given = "Andy",
            family = "Choens",
